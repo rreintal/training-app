@@ -14,6 +14,7 @@ struct WorkoutViewExerciseComponent: View {
     @State
     var exerciseName = "Bench press"
 
+    
     @State
     var exerciseNotes = ""
     
@@ -26,6 +27,11 @@ struct WorkoutViewExerciseComponent: View {
     
     var Exercise : NewSessionExercise
     
+    var workoutId : String?
+    
+    
+    // dev
+    var lastSessionSets = ["10 x 20kg", "8 x 30kg"]
     
     var body: some View {
         VStack {
@@ -39,7 +45,20 @@ struct WorkoutViewExerciseComponent: View {
                 }
                 Text(exerciseName).foregroundColor(.blue)
                 Spacer()
-                
+                Button {
+                    // TODO - prio 2
+                    // api call
+                    // workoutId järgi session, mis on latest ja siis selle sessioni exercise, millel on see
+                    // exercise id ja siis viimased setid, sorted by sequenceNumber
+                } label: {
+                    Image(systemName: "info.circle")
+                }
+                .contextMenu{
+                    ForEach(lastSessionSets, id: \.self) {oldSet in
+                        Text(oldSet)
+                    }
+                }
+
                 
             }
             .padding(.top, 10)

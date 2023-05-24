@@ -11,7 +11,7 @@ import Foundation
 
 class WebController {
 
-    func SendRegistration(registration: Register) async -> Bool {
+    func SendRegistration(registration: Register) async  -> Bool {
         // Define the URL and payload
         let urlString = APIConstants.API_IDENDTITY + "/register"
         print(urlString)
@@ -26,15 +26,16 @@ class WebController {
         request.httpMethod = "POST"
         do {
             let (data, response) = try await URLSession.shared.upload(for: request, from: encoded)
-            
+            let decoder = JSONDecoder()
             
             let responseAsHTTPURL = response as? HTTPURLResponse
             if(responseAsHTTPURL?.statusCode == 405) {
+                
+                //throw NSError(domain: "Registration failed!", code: 405)
                 return false;
             }
             if(responseAsHTTPURL?.statusCode == 200) {
                 print("REGISTER succesful!")
-                let decoder = JSONDecoder()
                 if let responseObject = try? decoder.decode(JWTResponse.self, from: data) {
                     print("Registration succesful!")
                     print("Saving JWT!")
@@ -99,6 +100,7 @@ class WebController {
     }
     
     func sendRequest<T: Decodable>(urlString: String, method: String, payload: Encodable?, returnType: T.Type) async throws -> T {
+        print("starting")
         var url = URL(string: urlString)
         var request = URLRequest(url: url!)
         request.httpMethod = method
@@ -129,7 +131,7 @@ class WebController {
             let decodedData = try JSONDecoder().decode(returnType, from: data)
             return decodedData
         } catch {
-            throw error
+            throw NSError(domain: "failed to decode object", code: 1)
         }
     }
 

@@ -44,7 +44,7 @@ struct WorkoutDescriptionComponent<T: View>: View {
                             //try await AppEntry.AppState.WebController.deleteWorkout(workoutId: workoutId)
                             // NO RETURN VALUE!!!
                             try await AppEntry.AppState.WebController.sendRequest(
-                                urlString: "http://localhost:5187/api/v1.0/workouts/DeleteWorkout/?workoutId=\(workoutId)",
+                                urlString: "http://localhost:5187/api/v1.0/workouts/ArchiveWorkout/?workoutId=\(workoutId)",
                                 method: HTTPMethod.DELETE,
                                 payload: nil,
                                 returnType: ErrorViewModel.self)

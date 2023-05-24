@@ -10,28 +10,16 @@ import Foundation
 
 class UsersAPI {
     
-    public static func GetUsers() -> [User] {
-        var users : [User] =
-        [
-            User(Name: "Richard"),
-            User(Name: "Marten"),
-            User(Name: "Margus"),
-            User(Name: "Marianne"),
-            User(Name: "Maarja"),
-            User(Name: "Melissa"),
-        ]
-        return users;
-    }
     
     public static func GetMoreUsers() async -> [User] {
         var users : [User] =
         [
-            User(Name: "AA"),
-            User(Name: "BB"),
-            User(Name: "CC"),
-            User(Name: "DD"),
-            User(Name: "GG"),
-            User(Name: "LL"),
+            User(Name: "NOT"),
+            User(Name: "IMPLEMENTED"),
+            User(Name: "YET"),
+            User(Name: ":("),
+            User(Name: "COMING"),
+            User(Name: "SOON!"),
         ]
         return users;
     }

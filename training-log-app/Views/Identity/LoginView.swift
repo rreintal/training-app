@@ -10,10 +10,10 @@ import SwiftUI
 struct LoginView: View {
     
     @State
-    var email = "" //"admin@email.ee"
+    var email = "admin@email.ee"
     
     @State
-    var password = ""//"Pede12345."
+    var password = "Pede12345."
     
     @FocusState
     var isKeyboardOpen : Bool

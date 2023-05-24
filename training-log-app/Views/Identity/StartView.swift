@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct StartView: View {
+    
+    
+    @State
+    var showShitView = false
+    
     var body: some View {
         NavigationView{
             VStack {

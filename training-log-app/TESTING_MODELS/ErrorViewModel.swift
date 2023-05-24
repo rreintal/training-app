@@ -9,6 +9,6 @@ import Foundation
 
 
 class ErrorViewModel : AppModel{
-    var Description : String
-    var StatusCode : Int
+    var error : String
+    var status : Int
 }

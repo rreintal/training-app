@@ -77,7 +77,7 @@ struct RegisterView: View {
                         buttonFunction: {
                             let data = Register(Email: email, Password: password, FirstName: firstname, LastName: lastname, UserName: username)
                             Task {
-                                let isRegistrationSuccesful = await AppEntry.AppState.WebController.SendRegistration(registration: data)
+                                let isRegistrationSuccesful = await try AppEntry.AppState.WebController.SendRegistration(registration: data)
                                 if isRegistrationSuccesful {
                                     self.isRegistrationSuccesful = true
                                     AppEntry.AppState.username = data.UserName

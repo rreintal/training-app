@@ -12,15 +12,18 @@ struct WorkoutView: View {
     // siin läheb vaja workoutId, kuna muidu ei saa api calli teha!
     var workoutId : UUID
     
-    
     @State
-    var workoutSession: NewWorkoutSession? // declare as var
+    var workoutSession: NewWorkoutSession?
     
     var body: some View {
         VStack {
             ScrollView {
                 ForEach(workoutSession?.Exercises ?? []) { e in
-                    WorkoutViewExerciseComponent(exerciseName: e.ExerciseName, setAmount: e.Sets.count, Exercise: e)
+                    WorkoutViewExerciseComponent(
+                        exerciseName: e.ExerciseName,
+                        setAmount: e.Sets.count,
+                        Exercise: e,
+                        workoutId: workoutId.description)
                 }
             }
         }
@@ -29,16 +32,16 @@ struct WorkoutView: View {
             Button {
                 // finish workout, send api call?
                 Task {
-                    //try await AppEntry.AppState.WebController.saveNewWorkoutSession(session: workoutSession!)
-                    
                     // empty value tuleb tagasi!!
-                    try await AppEntry.AppState.WebController.sendRequest(
+                    // TODO - prio 2 - responseModel või vaata koodi pealt
+                    // error handling...
+                    try? await AppEntry.AppState.WebController.sendRequest(
                         urlString: "http://localhost:5187/api/v1.0/session/SaveNewWorkoutSession/",
                         method: HTTPMethod.POST,
                         payload: workoutSession!,
                         returnType: ErrorViewModel.self)
-                    
                     dismiss.callAsFunction()
+                    
                     
                 }
             } label: {
@@ -47,8 +50,7 @@ struct WorkoutView: View {
         }
         .onAppear{
             Task {
-                // TODO!
-                //workoutSession = try await AppEntry.AppState.WebController.getNewWorkoutSession(workoutId: workoutId.description)
+                // error handlinggggggggggg
                 workoutSession = try await AppEntry.AppState.WebController.sendRequest(
                     urlString: "http://localhost:5187/api/v1.0/session/GetNewWorkoutSession/?workoutId=\(workoutId.description)",
                     method: HTTPMethod.GET,
