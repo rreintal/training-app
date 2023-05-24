@@ -26,4 +26,18 @@ class Workout : Identifiable, AppModel{
         }
         return result;
     }
+    
+    enum CodingKeys : String, CodingKey {
+        case Id = "id"
+        case Name = "name"
+        case Exercises = "workoutExercises"
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        Id = try container.decode(UUID.self, forKey: .Id)
+        Name = try container.decode(String.self, forKey: .Name)
+        Exercises = try container.decode([WorkoutExercise].self, forKey: .Exercises)
+    }
+    
 }

@@ -32,7 +32,7 @@ class NewSessionExercise: Hashable, Identifiable, AppModel, Codable {
     enum CodingKeys: String, CodingKey {
         case ExerciseId = "exerciseId"
         case ExerciseName = "exerciseName"
-        case Sets = "sets"
+        case Sets = "newSessionExerciseSets"
     }
     
     required init(from decoder: Decoder) throws {

@@ -35,6 +35,7 @@ class WorkoutsAPI {
                 WorkoutExercise(Id: UUID(), Name: "Hammer curl", SetsCount: Int.random(in: 1...4), SequenceNumber: 5)
             ]
             
+            // see peaks olema tehtud juba backendis!!
             exercises2.sort { $0.SequenceNumber < $1.SequenceNumber }
             
             let workout2 = Workout(Id: UUID(), Name: "Pull", Exercises: exercises2)

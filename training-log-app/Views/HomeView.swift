@@ -9,6 +9,8 @@ import SwiftUI
 
 struct HomeView: View {
     
+    @Environment(\.dismiss) private var dismiss
+    
     @State
     var users : [User] = []
     
@@ -20,54 +22,46 @@ struct HomeView: View {
                     .font(.headline)
                     .foregroundColor(.white)
                 
+        
+                
             }.frame(minWidth: 0, maxWidth: .infinity)
                 .frame(height: 200)
                 .background(Color(.systemBlue))
                 .padding([.bottom], -8)
             
             
-            
-            
-            LineBreak()
-            VStack(alignment: .leading) {
-                Text("Users you might know").font(.headline)
-                ScrollView(.horizontal) {
-                    HStack(spacing: 20) {
-                        ForEach((users)) { user in
-                            FriendCardComponent(name: user.Name)
-                                .transition(.move(edge: .top))
-                                .animation(.easeInOut(duration: 0.7))
-                        }
-                        LoadMoreFriendsPlusButton {
-                            await UsersAPI.GetMoreUsers().forEach { item in
-                                users.append(item)
-                            }
-                        }
-                    }
-                }.scrollIndicators(.hidden)
-                
-            }
-            .padding([.leading, .trailing], 30)
-            LineBreak()
-            Spacer()
-            Button("AAAA") {
-                Task {
-                    var item = await AppEntry.AppState.WebController.sendRequest(
-                        requestUrl: "http://localhost:5187/api/v1.0/Refresh/GetItems",
-                        httpMethod:HTTPMethod.POST,
-                        payload: ItemWithName(Name: "name"),
-                        ReturnType:ItemWithName.self
-                    )
-                    if let itemWithName = item as? ItemWithName {
-                        // `itemWithName` is now of type `ItemWithName`
-                        // You can access its properties and use it accordingly
-                        print(itemWithName.Name)
-                    }
-                    
-                    
+            // TODO!
+            Group {
+                if(users.count == 0) {
                     
                 }
-            }.buttonStyle(.borderedProminent)
+                else {
+                    LineBreak()
+                    VStack(alignment: .leading) {
+                        Text("Users you might know").font(.headline)
+                        ScrollView(.horizontal) {
+                            HStack(spacing: 20) {
+                                ForEach(users) { user in
+                                    FriendCardComponent(name: user.Name)
+                                        .transition(.move(edge: .top))
+                                        .animation(.easeInOut(duration: 0.7))
+                                }
+                                LoadMoreFriendsPlusButton {
+                                    await UsersAPI.GetMoreUsers().forEach { item in
+                                        users.append(item)
+                                    }
+                                }
+                            }
+                        }.scrollIndicators(.hidden)
+                        
+                    }
+                    .padding([.leading, .trailing], 30)
+                    LineBreak()
+                }
+            }
+            
+            
+            Spacer()
             Spacer()
             
             
@@ -75,8 +69,19 @@ struct HomeView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background()
         .opacity(0.9)
+        .task {
+            Task {
+                //users = try await AppEntry.AppState.WebController.getUserModels();
+                users = try await AppEntry.AppState.WebController.sendRequest(
+                    urlString:"http://localhost:5187/api/v1.0/Users/GetUserModels/?appUserId=\(AppEntry.AppState.appUserId!.description)",
+                    method: HTTPMethod.GET,
+                    payload: nil,
+                    returnType: [User].self)
+                
+            }
+        }
         .onAppear{
-            users = UsersAPI.GetUsers()
+            AppEntry.AppState.addView(view: dismiss)
         }
     }
     

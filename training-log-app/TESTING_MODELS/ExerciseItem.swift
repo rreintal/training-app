@@ -19,4 +19,18 @@ class ExerciseItem : Identifiable, AppModel{
         self.Name = Name
         self.MuscleGroup = MuscleGroup
     }
+    
+    enum CodingKeys: String ,CodingKey {
+        case Id = "exerciseId"
+        case Name = "name"
+        case MuscleGroup = "muscleGroupName"
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        Id = try container.decode(UUID.self, forKey: .Id)
+        Name = try container.decode(String.self, forKey: .Name)
+        MuscleGroup = try container.decode(String.self, forKey: .MuscleGroup)
+    }
+    
 }

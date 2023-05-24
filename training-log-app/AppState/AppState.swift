@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 class AppState : ObservableObject{
     
@@ -30,15 +31,44 @@ class AppState : ObservableObject{
     var appUserId : String?
     
     @Published
-    var exerciseItems : [ExerciseItem]
+    var views : [DismissAction] = []
+    
+    
+    // HACK, et saaks ilusti nupuga välja logida!!!
+    @Published
+    var logOut = false
+    
+    //@Published
+    //var exerciseItems : [ExerciseItem]
+    
+    public func LogOut() {
+        username = ""
+        email = ""
+        isLoggedIn = false
+        jwt = ""
+        refreshToken = ""
+        //appUserId = ""
+        views = []
+    }
     
     public var WebController : WebController
+    
+    public func closeAllViews() {
+        for view in views {
+            view.callAsFunction()
+        }
+    }
+    
+    public func addView(view : DismissAction) {
+        views.append(view)
+
+    }
     
     init() {
         WebController = training_log_app.WebController()
         
         // fetchi EXERCISED
-        exerciseItems = ExerciseItemsAPI.GetExerciseItems()
+        //exerciseItems =  WebController.getExerciseItems()
         
         // DEV!!!
         appUserId = "0d177a5c-f11a-11ed-a05b-0242ac120003"

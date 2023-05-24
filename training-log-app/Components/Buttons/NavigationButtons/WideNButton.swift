@@ -22,6 +22,10 @@ struct WideButton<T: View>: View {
     var isNavigationButton : Bool = true
     
     var buttonFunction : (() -> Void)?
+    
+    
+    
+    
 
     var body: some View {
         if(isNavigationButton) {
@@ -36,7 +40,8 @@ struct WideButton<T: View>: View {
                 .stroke(borderColor, lineWidth: 2))
                 .foregroundColor(textColor)
             
-        }.background(backgroundColor)
+        }
+        .background(backgroundColor)
             .cornerRadius(10)
         }else {
             Button {

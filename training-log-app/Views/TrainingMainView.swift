@@ -9,13 +9,14 @@ import SwiftUI
 
 struct TrainingMainView: View {
     
+    @Environment(\.dismiss) private var dismiss
 
     @State
     var isPresented : Bool = false
     
     
     @State
-    var workouts : [Workout]
+    var workouts : [Workout]?
     //
     var body: some View {
         NavigationView {
@@ -52,9 +53,9 @@ struct TrainingMainView: View {
                             .frame(maxWidth: .infinity)
                             .overlay(RoundedRectangle(cornerRadius: 5)
                                 .stroke(.gray, lineWidth: 1))
+                            .cornerRadius(5)
                         }
                     }
-                    
                     VStack {
                         HStack {
                             Text("My Workouts")
@@ -62,18 +63,20 @@ struct TrainingMainView: View {
                                 .fontWeight(.semibold)
                             Spacer()
                         }
-                        
                         ScrollView(showsIndicators: false) {
-                            ForEach(workouts) { workout in
+                            ForEach(workouts ?? []) { workout in
                                 VStack {
                                     WorkoutDescriptionComponent(
                                         navigationView: WorkoutView(workoutId: workout.Id),
                                         workoutName: workout.Name,
-                                        exercisesList: workout.getExercisesStringList()
+                                        exercisesList: workout.getExercisesStringList(),
+                                        workoutId: workout.Id.description,
+                                        onDelete: { deletedWorkoutId in
+                                            workouts!.removeAll { $0.Id.description == deletedWorkoutId }
+                                            }
                                     )
                                 }
                             }
-
                         }
                         .padding(.top, 10)
                     }
@@ -85,13 +88,19 @@ struct TrainingMainView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onAppear{
-                Task {
-                    workouts = await WorkoutsAPI.getWorkouts()
+                Task{
+                    workouts = try await AppEntry.AppState.WebController.sendRequest(
+                        urlString: "http://localhost:5187/api/v1.0/workouts/getuserworkouts/?id=\(AppEntry.AppState.appUserId!.description)",
+                        method: HTTPMethod.GET,
+                        payload: nil,
+                        returnType: [Workout].self
+                    )
                 }
+                
             }
-            
-            
-            
+            .onAppear{
+                AppEntry.AppState.addView(view: dismiss)
+            }
         }
     }
     

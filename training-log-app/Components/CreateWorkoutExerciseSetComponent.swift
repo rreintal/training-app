@@ -26,6 +26,8 @@ struct CreateWorkoutExerciseSetComponent: View {
     @State
     var showRepsText = true
     
+    var ExerciseSet : NewSessionExerciseSet
+    
     // If this isnt added then there is no way to close the keyboard!!
     @FocusState private var focusReps: Bool
     @FocusState private var focusWeight: Bool
@@ -39,6 +41,9 @@ struct CreateWorkoutExerciseSetComponent: View {
             Spacer()
             VStack {
                 TextField("-", text: $reps).frame(width: 50)
+                    .onChange(of: reps, perform: { newValue in
+                        ExerciseSet.Repetitions = Int(reps) ?? 0
+                    })
                     .multilineTextAlignment(TextAlignment.center)
                     .keyboardType(.numberPad)
                     .focused($focusReps)
@@ -49,6 +54,9 @@ struct CreateWorkoutExerciseSetComponent: View {
             Spacer()
             VStack {
                 TextField("-", text: $weight).frame(width: 50)
+                    .onChange(of: weight, perform: { newValue in
+                        ExerciseSet.Weight = Double(weight) ?? 0.0
+                    })
                     .multilineTextAlignment(TextAlignment.center)
                     .keyboardType(.numberPad)
                     .focused($focusWeight)
@@ -65,6 +73,6 @@ struct CreateWorkoutExerciseSetComponent: View {
 
 struct CreateWorkoutExerciseSetComponent_Previews: PreviewProvider {
     static var previews: some View {
-        CreateWorkoutExerciseSetComponent(setSequenceNumber: "1")
+        CreateWorkoutExerciseSetComponent(setSequenceNumber: "1", ExerciseSet: NewSessionExerciseSet(Wegiht: 10, SequenceNumber: 1, Repetitons: 15))
     }
 }

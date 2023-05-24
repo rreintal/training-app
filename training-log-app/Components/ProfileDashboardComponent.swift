@@ -13,12 +13,16 @@ struct ProfileDashboardComponent: View {
             Text("Dashboard").font(.system(.headline))
             VStack {
                 HStack {
-                    BigRectangleButton(imageName: "chart.bar", buttonContent: "STATISTICS")
-                    BigRectangleButton(imageName: "speedometer", buttonContent: "MEASURES")
+                    BigRectangleButton(
+                        imageName: "chart.bar",
+                        buttonContent: "STATISTICS",
+                        navigationView: StatisticsView())
+                    
+                    BigRectangleButton(imageName: "speedometer", buttonContent: "MEASURES", navigationView: EmptyView())
                 }
                 HStack {
-                    BigRectangleButton(imageName: "dumbbell", buttonContent: "EXERCISES")
-                    BigRectangleButton(imageName: "calendar", buttonContent: "CALENDAR")
+                    BigRectangleButton(imageName: "dumbbell", buttonContent: "EXERCISES", navigationView: EmptyView())
+                    BigRectangleButton(imageName: "calendar", buttonContent: "CALENDAR", navigationView: EmptyView())
                 }
             }
         }

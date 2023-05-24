@@ -1,31 +1,15 @@
 //
-//  WorkoutViewExerciseComponent.swift
+//  SessionViewExerciseComponent.swift
 //  training-log-app
 //
-//  Created by Richard Reintal on 01.05.2023.
+//  Created by Richard Reintal on 23.05.2023.
 //
 
 import SwiftUI
 
-struct WorkoutViewExerciseComponent: View {
+struct SessionViewExerciseComponent: View {
     
-    // var exercise
-    
-    @State
-    var exerciseName = "Bench press"
-
-    @State
-    var exerciseNotes = ""
-    
-    // dev
-    
-    var setAmount : Int
-    
-    @State
-    var setSaved = false
-    
-    var Exercise : NewSessionExercise
-    
+    var sessionExercise : WorkoutSessionExercise
     
     var body: some View {
         VStack {
@@ -37,14 +21,16 @@ struct WorkoutViewExerciseComponent: View {
                         .frame(width: 50, height: 50)
                         .foregroundColor(.white)
                 }
-                Text(exerciseName).foregroundColor(.blue)
+                Text(sessionExercise.ExerciseName.description).foregroundColor(.blue)
                 Spacer()
+                
                 
                 
             }
             .padding(.top, 10)
+            .padding(.bottom, 15)
             HStack {
-                TextField("Add exercise notes", text: $exerciseNotes)
+                //TextField("Add exercise notes", text: $exerciseNotes)
             }
             
             HStack {
@@ -64,8 +50,11 @@ struct WorkoutViewExerciseComponent: View {
             }.foregroundColor(.gray)
                 .font(.system(size: 15))
             
-            ForEach(Exercise.Sets) {ExerciseSet in
-                CreateWorkoutExerciseSetComponent(setSequenceNumber: ExerciseSet.SequenceNumber.description, ExerciseSet: ExerciseSet)
+            ForEach(sessionExercise.Sets, id: \.self) {exerciseSet in
+                SessionViewSetComponent(ExerciseSet: exerciseSet)
+                
+                
+                //CreateWorkoutExerciseSetComponent(setSequenceNumber: ExerciseSet.SequenceNumber.description, ExerciseSet: ExerciseSet)
             }
 
         
@@ -79,8 +68,8 @@ struct WorkoutViewExerciseComponent: View {
     }
 }
 
-struct WorkoutViewExerciseComponent_Previews: PreviewProvider {
+struct SessionViewExerciseComponent_Previews: PreviewProvider {
     static var previews: some View {
-        WorkoutViewExerciseComponent(setAmount: 2, Exercise: NewSessionExercise(ExerciseName: "name", Sets: []))
+        SessionViewExerciseComponent(sessionExercise: WorkoutSessionExercise())
     }
 }

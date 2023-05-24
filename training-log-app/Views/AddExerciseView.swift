@@ -15,30 +15,27 @@ struct AddExerciseView: View {
     var searchBarInput = ""
     
     
-    var exercisesList : [ExerciseItem] = AppEntry.AppState.exerciseItems
+    @State
+    var exercisesList : [ExerciseItem] = []
     
-    // siin oli state
     @ObservedObject
     var newWorkout : NewWorkout
     
+    // TODO:
+    // kui lisad exercise workouti, siis see peaks listist kaduma!!
     
     
     var body: some View {
-        //NavigationView {
             VStack {
                 ScrollView {
-                    /*
-                     ForEach(exercises, id: \.self) { exercise in
-                         if(doesNameContainSubstring(searchBarString: searchBarInput, compareableString: exercise) || searchBarInput == "") {
-                             AddExerciseComponent(exerciseName: exercise, presentationMode: dismiss, workoutExercises: $workoutExercisesList)
-                         }
-                     }
-                     */
                     ForEach(exercisesList) { exerciseItem in
-                        AddExerciseComponent(
-                            presentationMode: dismiss,
-                            exerciseItem: exerciseItem,
-                            workout: newWorkout)
+                        if(doesNameContainSubstring(searchBarString: searchBarInput, compareableString: exerciseItem.Name) || searchBarInput == "") {
+                            AddExerciseComponent(
+                                presentationMode: dismiss,
+                                exerciseItem: exerciseItem,
+                                workout: newWorkout)
+                        }
+                        
                     }
                     
                     
@@ -48,16 +45,24 @@ struct AddExerciseView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding([.leading, .trailing], 20)
             .navigationTitle("Add exercise")
-            
-        //}.navigationTitle("Add exercise")
-        //.navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                Task {
+                    //exercisesList = await AppEntry.AppState.WebController.getExerciseItems()
+                    exercisesList = try await AppEntry.AppState.WebController.sendRequest(
+                        urlString: "http://localhost:5187/api/v1.0/Exercises/GetExerciseItems",
+                        method: HTTPMethod.GET,
+                        payload: nil,
+                        returnType: [ExerciseItem].self)
+                }
+            }.onAppear{
+                AppEntry.AppState.addView(view: dismiss)
+            }
     }
     
     
     func doesNameContainSubstring(searchBarString: String, compareableString: String) -> Bool {
         let lowercasedSearchBarString = searchBarString.lowercased()
         let lowercasedCompareableString = compareableString.lowercased()
-        
         return lowercasedCompareableString.contains(lowercasedSearchBarString)
     }
                         

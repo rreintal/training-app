@@ -31,4 +31,19 @@ class WorkoutExercise : Hashable, AppModel{
             hasher.combine(SetsCount)
             hasher.combine(SequenceNumber)
         }
+    
+    enum CodingKeys : String, CodingKey {
+        case ExerciseId = "id"
+        case Name = "name"
+        case SetsCount = "setsCount"
+        case SequenceNumber = "sequenceNumber"
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        ExerciseId = try container.decode(UUID.self, forKey: .ExerciseId)
+        Name = try container.decode(String.self, forKey: .Name)
+        SetsCount = try container.decode(Int.self, forKey: .SetsCount)
+        SequenceNumber = try container.decode(Int.self, forKey: .SequenceNumber)
+    }
 }

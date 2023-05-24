@@ -12,12 +12,12 @@ struct FriendCardComponent: View {
     @Environment(\.colorScheme) var colorScheme
     
     var name : String = "Richard"
-    var imageName : String = "men1"
+    var imageName : String = "person"
     
     var body: some View {
         VStack {
             ZStack {
-                Circle().fill(.black)
+                Circle().fill(.blue)
                     .frame(height: 110)
                 if (imageName != "person") {
                     Image(imageName)

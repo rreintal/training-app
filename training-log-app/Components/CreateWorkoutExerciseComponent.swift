@@ -91,7 +91,8 @@ struct CreateWorkoutExerciseComponent: View {
                 if(exercise.SetsCount < 1) {
                     
                 }else {
-                    CreateWorkoutExerciseSetComponent(setSequenceNumber: (sequence + 1).description)
+                    // VÄIKE HACK, KUNA KASUTAN SAMA VIEW ERINEVATE ASJADE JAOKS, HALB DESIGN!!
+                    CreateWorkoutExerciseSetComponent(setSequenceNumber: (sequence + 1).description, ExerciseSet: NewSessionExerciseSet(Wegiht: 0, SequenceNumber:(sequence + 1) , Repetitons: 0))
                 }
             }
             

@@ -7,16 +7,19 @@
 
 import SwiftUI
 
-struct BigRectangleButton: View {
+struct BigRectangleButton<T: View>: View {
     
     @Environment(\.colorScheme) var colorScheme
     
     var imageName : String = "calendar"
     var buttonContent : String = "CALENDAR"
+    var navigationView : T?
     
     var body: some View {
-        Button {
+        NavigationLink {
             // action
+            // view
+            navigationView
         } label: {
             HStack {
                 Image(systemName: imageName).foregroundColor(whichIconColorToUse(colorScheme))
@@ -46,6 +49,6 @@ func whichIconColorToUse(_ scheme : ColorScheme) -> Color {
 
 struct BigRectangleButton_Previews: PreviewProvider {
     static var previews: some View {
-        BigRectangleButton()
+        BigRectangleButton(navigationView: LoginView())
     }
 }

@@ -15,7 +15,8 @@ struct CreateWorkoutView: View {
     var workoutTitle = ""
     
     @ObservedObject
-    var workout : NewWorkout = NewWorkout(AppUserId: UUID(uuidString: AppEntry.AppState.appUserId!)!, Name: "")
+    var workout : NewWorkout = NewWorkout(AppUserId: UUID(uuidString: AppEntry.AppState.appUserId ?? "")!, Name: "")
+    
     
     // VEIDER
     @State
@@ -50,16 +51,12 @@ struct CreateWorkoutView: View {
                 }.padding([.top], 15)
             }
             
-            // siin displayn olemasolevad exercised
+            
             ScrollView{
                 ForEach(workout.Exercises) { WorkoutExercise in
                     CreateWorkoutExerciseComponent(exercise: WorkoutExercise, exercisesList: $workout.Exercises)
                 }
             }
-            
-            
-            
-            // add exercise button
             
             NavigationLink {
                 AddExerciseView(newWorkout: workout)
@@ -98,6 +95,16 @@ struct CreateWorkoutView: View {
                     showAlert = true
                 }
                 else {
+                    workout.Name = workoutTitle
+                    Task {
+                        // Returnib EMPTY VALUE!!
+                        try await AppEntry.AppState.WebController.sendRequest(
+                            urlString: "http://localhost:5187/api/v1.0/workouts/CreateNewWorkout",
+                            method: HTTPMethod.POST,
+                            payload: workout,
+                            returnType: ErrorViewModel.self)
+                    }
+                    
                     print("Salvestan ja saadan db!")
                     dismiss()
                 }
@@ -109,11 +116,27 @@ struct CreateWorkoutView: View {
             }
 
         }
+        .onAppear {
+            // HACK
+            Task {
+                // ei tea kuidas viisakas oleks teha!!!
+                //var newWorkout = try await AppEntry.AppState.WebController.getNewWorkout(userId: AppEntry.AppState.appUserId!)
+                var newWorkout = try await AppEntry.AppState.WebController.sendRequest(
+                    urlString: "http://localhost:5187/api/v1.0/workouts/GetNewWorkout/?appUserId=\(AppEntry.AppState.appUserId!.description)",
+                    method: HTTPMethod.GET,
+                    payload: nil,
+                    returnType: NewWorkout.self)
+                
+                workout.AppUserId = newWorkout.AppUserId
+            }
+        }.onAppear{
+            AppEntry.AppState.addView(view: dismiss)
+        }
     }
 }
 
 struct CreateWorkoutView_Previews: PreviewProvider {
     static var previews: some View {
-        CreateWorkoutView(workout: NewWorkout(AppUserId: UUID(), Name: "New workout name"))
+        CreateWorkoutView() // workout: NewWorkout(AppUserId: UUID(), Name: "New workout name")
     }
 }

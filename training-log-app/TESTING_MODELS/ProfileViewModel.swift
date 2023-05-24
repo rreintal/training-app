@@ -28,9 +28,9 @@ class ProfileViewModel: ObservableObject, AppModel, Codable {
     
     enum CodingKeys: String, CodingKey {
         case Username = "username"
-        case TotalWorkoutsCount = "totalworkoutscount"
-        case TotalVolumeCount = "totalvolumecount"
-        case FriendsCount = "friendscount"
+        case TotalWorkoutsCount = "totalWorkoutsCount"
+        case TotalVolumeCount = "totalVolumeCount"
+        case FriendsCount = "friendsCount"
     }
     
     required init(from decoder: Decoder) throws {

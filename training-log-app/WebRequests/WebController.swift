@@ -97,98 +97,44 @@ class WebController {
         }
         return false
     }
-
     
-    
-    // params - method, payload, return type?????,
-    // @Method - POST, GET, DELETE
-    // Maybe create a protocol which needs to be applied for returnType
-    // @Payload - Model to send
-    // @ReturnType - Model to recieve
-    //
-    // Return OBJECT
-    func sendRequest(requestUrl : String,
-                     httpMethod : String,
-                     payload : AppModel,
-                     ReturnType : AppModel.Type) async -> AppModel  {
-        
-        var done = false
-        var result : AppModel = User(Name: "SERVER ERROR?")
-        
-        // Kuidas URL saab üldse null olla, kui input type on String?!
-        let url = URL(string: requestUrl)!
-        print("Sending \(httpMethod) request to \(url.description).")
-        
-        let encodedPayload = try? JSONEncoder().encode(payload);
-        if encodedPayload == nil {
-            print("Failed to encode data!")
-            // ERROR HANDLING
-        }
-        
-        var request = URLRequest(url: url)
+    func sendRequest<T: Decodable>(urlString: String, method: String, payload: Encodable?, returnType: T.Type) async throws -> T {
+        var url = URL(string: urlString)
+        var request = URLRequest(url: url!)
+        request.httpMethod = method
         request.setValue(HTTPMediaType.ApplicationJson, forHTTPHeaderField: HTTPHeader.ContentType)
         request.setValue("Bearer " + AppEntry.AppState.jwt!, forHTTPHeaderField: HTTPHeader.Authorization)
-        request.httpMethod = httpMethod
         
+        // Set payload if it's not a GET request
+        if method != HTTPMethod.GET, let payload = payload {
+            request.httpBody = try? JSONEncoder().encode(payload)
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        }
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: -1, userInfo: nil)
+        }
+        
+        if httpResponse.statusCode == 401 {
+            // Perform refresh token request here
+            let refreshTokenModel = RefreshTokenModel(JWT: AppEntry.AppState.jwt!, refreshToken: AppEntry.AppState.refreshToken!)
+            var responseCode = await RefreshToken(RefreshTokenModel: refreshTokenModel)
             
-        repeat {
-            // saada request
-            do {
-                
-                let (data, response) = try await URLSession.shared.upload(for: request, from: encodedPayload!)
-                let httpResponse = response as? HTTPURLResponse
-                
-                // KUI ON 401
-                if httpResponse?.statusCode == HTTPResponseCode.UNAUTHORIZED {
-                    print("JWT has expired.")
-                    // Refreshi tokenit
-                    // VB PROBLEEMNE, et võtan AppState JWT ja AppState refreshTokeni siit nii!
-                    let refreshTokenModel = RefreshTokenModel(JWT: AppEntry.AppState.jwt!, refreshToken: AppEntry.AppState.refreshToken!)
-                    var responseCode = await RefreshToken(RefreshTokenModel: refreshTokenModel)
-                    
-                    // Update authorization header
-                    request.setValue("Bearer " + AppEntry.AppState.jwt!, forHTTPHeaderField: HTTPHeader.Authorization)
-                    print("Changed Bearer token!")
-                    
-                    if(responseCode == HTTPResponseCode.NOT_FOUND) {
-                        done = true
-                        result = User(Name: "ERROR - SERVER ERROR, JWT REFRESH FAILED!")
-                    }
-                }
-                if httpResponse?.statusCode == HTTPResponseCode.NOT_FOUND {
-                    // Kui on 404
-                    // done = true
-                    // returni error
-                    done = true;
-                    result = User(Name: "RETURN ERROR- SERVER NOT FOUND!")
-                }
-                if httpResponse?.statusCode == HTTPResponseCode.OK {
-                    // kui on 200
-                    // done = true
-                    // returni data
-                    let decoder = JSONDecoder()
-                    if let decodedData = try? decoder.decode(ReturnType.self, from: data) {
-                        done = true;
-                        result = decodedData
-                    }else {
-                        print(data.description.utf8)
-                        print("Failed to decode result!")
-                        done = true
-                        result = User(Name: "RETURN ERROR- SERVER ERROR!")
-                    }
-                }
-                
-            }catch {
-                // VB PROBLEMAATILINE!!!
-                //print("Error sending request!")
-                //done = true
-                //result = User(Name: "ERROR SENDING RESULT - POSSIBLY SERVER PROBLEM!")
-            }
-        } while done == false
+            // Retry the original request after refreshing the token
+            return try await sendRequest(urlString: urlString, method: method, payload: payload, returnType: returnType)
+        }
         
-        return result
+        do {
+            let decodedData = try JSONDecoder().decode(returnType, from: data)
+            return decodedData
+        } catch {
+            throw error
+        }
     }
+
     
+    //
     
     func RefreshToken(RefreshTokenModel : RefreshTokenModel) async -> Int{
         let url = URL(string: APIConstants.API_IDENDTITY + APIConstants.API_REFRESHTOKEN)!

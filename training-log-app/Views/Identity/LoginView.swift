@@ -10,14 +10,15 @@ import SwiftUI
 struct LoginView: View {
     
     @State
-    var email = "admin@email.ee"
+    var email = "" //"admin@email.ee"
     
     @State
-    var password = "Pede12345."
+    var password = ""//"Pede12345."
     
     @FocusState
     var isKeyboardOpen : Bool
     
+    @Environment(\.dismiss) var dismiss
     
     // lisa appstate ka field, "logged in" vms
     @State
@@ -82,6 +83,11 @@ struct LoginView: View {
                                 data.Password = password
                                 Task{
                                     let isLoginSuccesful = await AppEntry.AppState.WebController.SendLogin(loginData: data)
+                                    
+                                    // Reset fields?!
+                                    email = ""
+                                    password = ""
+                                    
                                     if isLoginSuccesful {
                                         self.isLoginSuccesful = true   
                                     }
@@ -96,8 +102,8 @@ struct LoginView: View {
                         content: "Sign up",
                         backgroundColor: .white,
                         textColor: .gray,
-                        borderColor: .gray
-                    )
+                        borderColor: .gray)
+                    
                 }.padding([.leading, .trailing], 30)
                     .padding(.bottom, 30)
                     

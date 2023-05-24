@@ -15,4 +15,15 @@ class User : Identifiable, AppModel{
         self.Id = UUID()
         self.Name = Name
     }
+    
+    enum CodingKeys:String ,CodingKey {
+        case Id = "id"
+        case Name = "name"
+    }
+    
+    required init(from : Decoder) throws {
+        let container = try from.container(keyedBy: CodingKeys.self)
+        Id = try container.decode(UUID.self, forKey: .Id)
+        Name = try container.decode(String.self, forKey: .Name)
+    }
 }

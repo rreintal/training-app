@@ -11,6 +11,8 @@ import SwiftUI
 
 struct RegisterView: View {
     
+    @Environment(\.dismiss) var dismiss
+    
     @State
     var email : String = ""
     @State
@@ -96,8 +98,7 @@ struct RegisterView: View {
                         content: "Log in",
                         backgroundColor: .white,
                         textColor: .gray,
-                        borderColor: .gray
-                    )
+                        borderColor: .gray) 
                     
                     
                 }.padding([.leading, .trailing], 20)

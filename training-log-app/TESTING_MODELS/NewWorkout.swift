@@ -21,9 +21,9 @@ class NewWorkout : ObservableObject, AppModel{
     }
     
     enum CodingKeys: String, CodingKey {
-            case AppUserId = "appuserId"
+            case AppUserId = "appUserId"
             case Name = "name"
-            case Exercises = "exercises"
+            case Exercises = "newWorkoutExercises"
         }
         
         required init(from decoder: Decoder) throws {

@@ -30,7 +30,7 @@ struct ProfileStatsComponent: View {
             }
             VStack {
                 Text("Total volume").font(.system(.headline))
-                Text(totalVolumeCount.description).font(.system(.callout))
+                Text(totalVolumeCount.description + " kg").font(.system(.callout))
             }
         }
         

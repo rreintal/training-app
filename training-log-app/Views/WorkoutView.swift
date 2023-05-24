@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct WorkoutView: View {
+    @Environment(\.dismiss) var dismiss
     // siin läheb vaja workoutId, kuna muidu ei saa api calli teha!
     var workoutId : UUID
     
@@ -18,11 +19,6 @@ struct WorkoutView: View {
     var body: some View {
         VStack {
             ScrollView {
-                /*
-                ForEach(workoutSession.Exercises, id: \.self) { e in
-                    WorkoutViewExerciseComponent(exerciseName: e.Name, setAmount: e.SetsCount)
-                }
-                 */
                 ForEach(workoutSession?.Exercises ?? []) { e in
                     WorkoutViewExerciseComponent(exerciseName: e.ExerciseName, setAmount: e.Sets.count, Exercise: e)
                 }
@@ -32,20 +28,41 @@ struct WorkoutView: View {
         .toolbar {
             Button {
                 // finish workout, send api call?
+                Task {
+                    //try await AppEntry.AppState.WebController.saveNewWorkoutSession(session: workoutSession!)
+                    
+                    // empty value tuleb tagasi!!
+                    try await AppEntry.AppState.WebController.sendRequest(
+                        urlString: "http://localhost:5187/api/v1.0/session/SaveNewWorkoutSession/",
+                        method: HTTPMethod.POST,
+                        payload: workoutSession!,
+                        returnType: ErrorViewModel.self)
+                    
+                    dismiss.callAsFunction()
+                    
+                }
             } label: {
                 Text("Finish")
             }
         }
         .onAppear{
             Task {
-                workoutSession = await NewSessionAPI.GetNewWorkoutSession()
+                // TODO!
+                //workoutSession = try await AppEntry.AppState.WebController.getNewWorkoutSession(workoutId: workoutId.description)
+                workoutSession = try await AppEntry.AppState.WebController.sendRequest(
+                    urlString: "http://localhost:5187/api/v1.0/session/GetNewWorkoutSession/?workoutId=\(workoutId.description)",
+                    method: HTTPMethod.GET,
+                    payload: nil,
+                    returnType: NewWorkoutSession.self)
             }
+        }.onAppear{
+            AppEntry.AppState.addView(view: dismiss)
         }
     }
 }
 
 struct WorkoutView_Previews: PreviewProvider {
     static var previews: some View {
-        WorkoutView(workoutId: UUID() ,workoutSession: NewWorkoutSession(Name: "Aa", CreatedAt: Date(), Exercises: []))
+        WorkoutView(workoutId: UUID() ,workoutSession: NewWorkoutSession(workoutId: "a" ,Name: "Aa", Exercises: []))
     }
 }

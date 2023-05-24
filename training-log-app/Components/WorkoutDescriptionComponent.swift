@@ -17,6 +17,10 @@ struct WorkoutDescriptionComponent<T: View>: View {
     
     var exercisesList : [String] = ["Bench press", "Shoulder press", "Incline bench press"]
     
+    var workoutId : String
+    
+    var onDelete: (String) -> Void
+    
     var body: some View {
         VStack {
             HStack {
@@ -36,6 +40,18 @@ struct WorkoutDescriptionComponent<T: View>: View {
                     Button("Delete workout", role: .destructive) {
                             // action - delete workout!
                             // tegelt pead archivema, kuna muidu ei näe overall statisticut!
+                        Task {
+                            //try await AppEntry.AppState.WebController.deleteWorkout(workoutId: workoutId)
+                            // NO RETURN VALUE!!!
+                            try await AppEntry.AppState.WebController.sendRequest(
+                                urlString: "http://localhost:5187/api/v1.0/workouts/DeleteWorkout/?workoutId=\(workoutId)",
+                                method: HTTPMethod.DELETE,
+                                payload: nil,
+                                returnType: ErrorViewModel.self)
+                            
+                            onDelete(workoutId)
+                            
+                        }
                     }
                     } message: {
                         Text("Are you sure you want to delete this workout?")
@@ -72,13 +88,14 @@ struct WorkoutDescriptionComponent<T: View>: View {
         }
         .padding([.leading, .trailing, .top], 9)
         .frame(maxWidth: .infinity)
-        .overlay(RoundedRectangle(cornerRadius: 4)
+        .overlay(RoundedRectangle(cornerRadius: 10)
             .stroke(.gray, lineWidth: 1))
+        .cornerRadius(10)
     }
 }
 
 struct WorkoutDescriptionComponent_Previews: PreviewProvider {
     static var previews: some View {
-        WorkoutDescriptionComponent(navigationView: LoginView())
+        WorkoutDescriptionComponent(navigationView: LoginView(), workoutId: "workoutIdEmpty", onDelete: {_ in})
     }
 }

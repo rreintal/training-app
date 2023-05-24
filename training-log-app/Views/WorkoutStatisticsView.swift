@@ -9,6 +9,7 @@ import SwiftUI
 
 struct WorkoutStatisticsView: View {
     
+    @Environment(\.dismiss) private var dismiss
     var exerciseNames = ["Bench press",
                          "Shoulder press",
                          "Incline dumbbell press",
@@ -34,6 +35,9 @@ struct WorkoutStatisticsView: View {
         }.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
             .padding([.leading], 10)
             .padding()
+            .onAppear{
+                AppEntry.AppState.addView(view: dismiss)
+            }
             
             
     }
