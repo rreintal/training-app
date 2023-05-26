@@ -37,10 +37,10 @@ struct StartView: View {
                 // this vstack
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading) {
-                        BigHeader(content: "Application", textColor: .white)
+                        BigHeader(content: "Gym tracker", textColor: .white)
                         
                         
-                        Text("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy ")
+                        Text("Track and optimize your gym workouts. Record exercises, sets, and reps, and track your progress.")
                             .font(.system(size: 20))
                             .foregroundColor(.white).opacity(0.8)
                             

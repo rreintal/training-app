@@ -13,9 +13,6 @@ struct WorkoutStatisticsView: View {
     var exerciseNames = ["Bench press",
                          "Shoulder press",
                          "Incline dumbbell press",
-                         //"Dumbbell lateral raises",
-                         //"Hammer bicep curl",
-                         //"Bicep curl",
                          "Skull crushers",
                          "Tricep extension"]
     

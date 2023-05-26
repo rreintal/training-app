@@ -59,12 +59,7 @@ struct ProfileView: View {
             }.padding([.leading], 50)
                 .padding([.bottom], 10)
                 .padding([.top], 50)
-            /*
-            ProfileHeaderComponent(name: $viewModel.Username, onLogoutAction: logoutAction)
-                .padding([.leading], 50)
-                .padding([.bottom], 10)
-                .padding([.top], 50)
-             */
+            
             
             ProfileStatsComponent(
                 workoutsCount: $viewModel.TotalWorkoutsCount,
@@ -83,7 +78,7 @@ struct ProfileView: View {
             Task {
                     // API CALL
                 var apiResult = try await AppEntry.AppState.WebController.sendRequest(
-                    urlString: "http://localhost:5187/api/v1.0/Profile/GetProfileViewModel/?appUserId=\(AppEntry.AppState.appUserId!.description)",
+                    urlString: "https://hajusapp.azurewebsites.net/api/v1.0/Profile/GetProfileViewModel/?appUserId=\(AppEntry.AppState.appUserId!.description)",
                     method: HTTPMethod.GET,
                     payload: nil,
                     returnType: ProfileViewModel.self)

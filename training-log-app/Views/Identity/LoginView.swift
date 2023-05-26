@@ -9,23 +9,25 @@ import SwiftUI
 
 struct LoginView: View {
     
-    @State
-    var email = "admin@email.ee"
     
     @State
-    var password = "Pede12345."
+    var email = ""
+    
+    @State
+    var password = ""
     
     @FocusState
     var isKeyboardOpen : Bool
     
-    @Environment(\.dismiss) var dismiss
     
     // lisa appstate ka field, "logged in" vms
     @State
     var isLoginSuccesful : Bool = false
     
-    @State
-    var showErrorMessage : Bool = true
+    @State var erroMessage = "";
+    
+    
+    
     
     var body: some View {
         VStack {
@@ -52,6 +54,7 @@ struct LoginView: View {
                 Spacer()
                 
                 VStack {
+                    Text(erroMessage).foregroundColor(.red)
                     IdentityInput(inputBinding: $email,
                                   placeholder: "Email",
                                   leftImageName: "envelope",
@@ -63,6 +66,7 @@ struct LoginView: View {
                                   isSecureField: true,
                                   isValidFunction: IdentityValidation.isValidPassword)
                 }.focused($isKeyboardOpen)
+                    
                     
                 
                 Spacer()
@@ -82,18 +86,24 @@ struct LoginView: View {
                                 data.Email = email
                                 data.Password = password
                                 Task{
-                                    let isLoginSuccesful = await AppEntry.AppState.WebController.SendLogin(loginData: data)
-                                    
-                                    // Reset fields?!
-                                    email = ""
-                                    password = ""
-                                    
-                                    if isLoginSuccesful {
-                                        self.isLoginSuccesful = true   
+                                    do {
+                                        let isLoginSuccesful = try await AppEntry.AppState.WebController.SendLogin(loginData: data)
+                                        // Reset fields?!
+                                        if isLoginSuccesful {
+                                            self.isLoginSuccesful = true
+                                            email = ""
+                                            password = ""
+                                            erroMessage = ""
+                                        }
                                     }
+                                    catch let error as NSError {
+                                        print("errorMessage: \(error.domain)")
+                                        erroMessage = error.domain
+                                        
+                                    }
+                                    
                                 }
-                                
-                            }
+                        }
                     )
                     InputSeparator(content: "or")
                     
@@ -128,7 +138,6 @@ struct LoginView: View {
                         }
                     }
                 ).animation(.easeInOut(duration: 0.4))
-                
         }
     }
 }

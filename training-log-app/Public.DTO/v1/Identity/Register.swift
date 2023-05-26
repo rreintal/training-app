@@ -22,4 +22,21 @@ class Register : Codable {
         self.LastName = LastName
         self.UserName = UserName
     }
+    
+    enum CodingKeys:String ,CodingKey {
+        case Email = "email"
+        case Password = "password"
+        case FirstName = "firstName"
+        case LastName = "lastName"
+        case UserName = "username"
+    }
+    
+    required init(from : Decoder) throws{
+        let c = try from.container(keyedBy: CodingKeys.self)
+        Email = try c.decode(String.self, forKey: .Email)
+        Password = try c.decode(String.self, forKey: .Password)
+        FirstName = try c.decode(String.self, forKey: .FirstName)
+        LastName = try c.decode(String.self, forKey: .LastName)
+        UserName = try c.decode(String.self, forKey: .UserName)
+    }
 }

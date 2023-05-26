@@ -12,54 +12,72 @@ struct WorkoutView: View {
     // siin läheb vaja workoutId, kuna muidu ei saa api calli teha!
     var workoutId : UUID
     
+    @State var isResultPresented : Bool = false
+    
     @State
     var workoutSession: NewWorkoutSession?
     
+    @State
+    var workoutResult : WorkoutResult?
+    
     var body: some View {
-        VStack {
-            ScrollView {
-                ForEach(workoutSession?.Exercises ?? []) { e in
-                    WorkoutViewExerciseComponent(
-                        exerciseName: e.ExerciseName,
-                        setAmount: e.Sets.count,
-                        Exercise: e,
-                        workoutId: workoutId.description)
+        ZStack {
+            VStack {
+                ScrollView {
+                    ForEach(workoutSession?.Exercises ?? []) { e in
+                        WorkoutViewExerciseComponent(
+                            exerciseName: e.ExerciseName,
+                            setAmount: e.Sets.count,
+                            Exercise: e,
+                            workoutId: workoutId.description)
+                    }
                 }
             }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .toolbar {
-            Button {
-                // finish workout, send api call?
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .toolbar {
+                Button {
+                    // finish workout, send api call?
+                    Task {
+                        // empty value tuleb tagasi!!
+                        // TODO - prio 2 - responseModel või vaata koodi pealt
+                        // error handling...
+                        try? await AppEntry.AppState.WebController.sendRequest(
+                            urlString: "https://hajusapp.azurewebsites.net/api/v1.0/session/SaveNewWorkoutSession/",
+                            method: HTTPMethod.POST,
+                            payload: workoutSession!,
+                            returnType: ErrorViewModel.self)
+                        
+                        // get workoutResult
+                        workoutResult = try await AppEntry.AppState.WebController.sendRequest(
+                            urlString:"https://hajusapp.azurewebsites.net/api/v1.0/workouts/GetWorkoutResult/?workoutId=\(workoutId.description)",
+                            method: HTTPMethod.GET,
+                            payload: nil,
+                            returnType: WorkoutResult.self)
+                        isResultPresented = true;
+                        dismiss.callAsFunction()
+                        
+                        
+                    }
+                } label: {
+                    Text("Finish")
+                }
+            }
+            .onAppear{
                 Task {
-                    // empty value tuleb tagasi!!
-                    // TODO - prio 2 - responseModel või vaata koodi pealt
-                    // error handling...
-                    try? await AppEntry.AppState.WebController.sendRequest(
-                        urlString: "http://localhost:5187/api/v1.0/session/SaveNewWorkoutSession/",
-                        method: HTTPMethod.POST,
-                        payload: workoutSession!,
-                        returnType: ErrorViewModel.self)
-                    dismiss.callAsFunction()
-                    
-                    
+                    // error handlinggggggggggg
+                    workoutSession = try await AppEntry.AppState.WebController.sendRequest(
+                        urlString: "https://hajusapp.azurewebsites.net/api/v1.0/session/GetNewWorkoutSession/?workoutId=\(workoutId.description)",
+                        method: HTTPMethod.GET,
+                        payload: nil,
+                        returnType: NewWorkoutSession.self)
                 }
-            } label: {
-                Text("Finish")
+            }.onAppear{
+                AppEntry.AppState.addView(view: dismiss)
             }
+        }.popover(isPresented: $isResultPresented) {
+            WorkoutResultView(resultViewModel: workoutResult)
         }
-        .onAppear{
-            Task {
-                // error handlinggggggggggg
-                workoutSession = try await AppEntry.AppState.WebController.sendRequest(
-                    urlString: "http://localhost:5187/api/v1.0/session/GetNewWorkoutSession/?workoutId=\(workoutId.description)",
-                    method: HTTPMethod.GET,
-                    payload: nil,
-                    returnType: NewWorkoutSession.self)
-            }
-        }.onAppear{
-            AppEntry.AppState.addView(view: dismiss)
-        }
+        
     }
 }
 

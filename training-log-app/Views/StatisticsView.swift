@@ -10,7 +10,7 @@ import SwiftUI
 struct StatisticsView: View {
     
     @Environment(\.dismiss) private var dismiss
-    var workoutSession : [String] = ["1", "2", "3", "4", "5", "6"]
+    
     
     @State
     var workoutSessions : [WorkoutSession] = []
@@ -18,9 +18,21 @@ struct StatisticsView: View {
     var body: some View {
         VStack {
             ScrollView{
-                ForEach(workoutSessions, id: \.self) { session in
-                    StatisticsViewSessionButton(name: session.Name, navigationView: SessionView(Session: session))
+                Group {
+                    if workoutSessions.count == 0 {
+                        HStack {
+                            
+                            Text("You don't have workout sessions yet.").multilineTextAlignment(.center)
+                            Image(systemName: "figure.strengthtraining.traditional")
+                        }
+                        .foregroundColor(.gray)
+                    }else {
+                        ForEach(workoutSessions, id: \.self) { session in
+                            StatisticsViewSessionButton(name: session.Name, navigationView: SessionView(Session: session))
+                        }
+                    }
                 }
+                
                 
             }.padding([.leading, .trailing])
                 .padding([.top], 50)
@@ -30,12 +42,13 @@ struct StatisticsView: View {
             .navigationTitle("Statistics")
             .onAppear{
                 Task {
-                    //workoutSessions = try await AppEntry.AppState.WebController.GetUserSessions()
+                    
                     workoutSessions = try await AppEntry.AppState.WebController.sendRequest(
-                        urlString: "http://localhost:5187/api/v1.0/session/GetUserWorkoutSessions/?appUserId=\(AppEntry.AppState.appUserId!.description)",
+                        urlString: "https://hajusapp.azurewebsites.net/api/v1.0/session/GetUserWorkoutSessions/?appUserId=\(AppEntry.AppState.appUserId!.description)",
                         method: HTTPMethod.GET,
                         payload: nil,
                         returnType: [WorkoutSession].self)
+                    
                     
                 }
             }.onAppear{

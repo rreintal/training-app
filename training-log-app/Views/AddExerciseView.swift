@@ -47,9 +47,8 @@ struct AddExerciseView: View {
             .navigationTitle("Add exercise")
             .onAppear {
                 Task {
-                    //exercisesList = await AppEntry.AppState.WebController.getExerciseItems()
                     exercisesList = try await AppEntry.AppState.WebController.sendRequest(
-                        urlString: "http://localhost:5187/api/v1.0/Exercises/GetExerciseItems",
+                        urlString: "https://hajusapp.azurewebsites.net/api/v1.0/Exercises/GetExerciseItems",
                         method: HTTPMethod.GET,
                         payload: nil,
                         returnType: [ExerciseItem].self)

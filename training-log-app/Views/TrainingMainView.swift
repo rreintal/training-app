@@ -90,7 +90,7 @@ struct TrainingMainView: View {
             .onAppear{
                 Task{
                     workouts = try await AppEntry.AppState.WebController.sendRequest(
-                        urlString: "http://localhost:5187/api/v1.0/workouts/getuserworkouts/?id=\(AppEntry.AppState.appUserId!.description)",
+                        urlString: "https://hajusapp.azurewebsites.net/api/v1.0/workouts/getuserworkouts/?id=\(AppEntry.AppState.appUserId!.description)",
                         method: HTTPMethod.GET,
                         payload: nil,
                         returnType: [Workout].self
@@ -100,6 +100,15 @@ struct TrainingMainView: View {
             }
             .onAppear{
                 AppEntry.AppState.addView(view: dismiss)
+            }.refreshable {
+                Task{
+                    workouts = try await AppEntry.AppState.WebController.sendRequest(
+                        urlString: "https://hajusapp.azurewebsites.net/api/v1.0/workouts/getuserworkouts/?id=\(AppEntry.AppState.appUserId!.description)",
+                        method: HTTPMethod.GET,
+                        payload: nil,
+                        returnType: [Workout].self
+                    )
+                }
             }
         }
     }

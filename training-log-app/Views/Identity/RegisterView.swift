@@ -11,8 +11,6 @@ import SwiftUI
 
 struct RegisterView: View {
     
-    @Environment(\.dismiss) var dismiss
-    
     @State
     var email : String = ""
     @State
@@ -31,6 +29,9 @@ struct RegisterView: View {
     @State
     var isRegistrationSuccesful : Bool = false
     
+    @State
+    var errorMessage = ""
+    
     // BUG!!!
     // TODO
     // kui form on lahti ja submitin, siis navigeerin uuele viewile- kui vajutan back nuppu siis isKeyBoardOpen on true ja pekkis!
@@ -40,22 +41,24 @@ struct RegisterView: View {
             VStack {
                 NavigationLink("", destination: NavigationBar(), isActive: $isRegistrationSuccesful).opacity(0)
                 Spacer()
-                VStack {
+                VStack{
                     Group {
                         if !isKeyboardOpen {
                             BigHeader(content: "Create account ", textColor: .white)
+                            
                         }
                     }
                    
                 }.frame(maxWidth: .infinity, alignment: .leading)
                     .padding([.leading], 20)
                     
-                    
+
                 Spacer()
                 Spacer()
                 Spacer()
                 Spacer()
                 VStack {
+                    Text(errorMessage).foregroundColor(.red)
                     IdentityInput(inputBinding: $email, placeholder: "Email", leftImageName: "envelope", isValidFunction: IdentityValidation.isValidEmail)
                     IdentityInput(inputBinding: $firstname, placeholder: "First name", leftImageName: "person", isValidFunction: IdentityValidation.isValidFirstName)
                     IdentityInput(inputBinding: $lastname, placeholder: "Last name", leftImageName: "person", isValidFunction: IdentityValidation.isValidUsername)
@@ -77,14 +80,20 @@ struct RegisterView: View {
                         buttonFunction: {
                             let data = Register(Email: email, Password: password, FirstName: firstname, LastName: lastname, UserName: username)
                             Task {
-                                let isRegistrationSuccesful = await try AppEntry.AppState.WebController.SendRegistration(registration: data)
-                                if isRegistrationSuccesful {
-                                    self.isRegistrationSuccesful = true
-                                    AppEntry.AppState.username = data.UserName
-                                    AppEntry.AppState.email = data.Email
-                                    AppEntry.AppState.isLoggedIn = true
+                                do {
+                                    let isRegistrationSuccesful = try await AppEntry.AppState.WebController.SendRegistration(registration: data)
+                                    if isRegistrationSuccesful {
+                                        self.isRegistrationSuccesful = true
+                                        AppEntry.AppState.username = data.UserName
+                                        AppEntry.AppState.email = data.Email
+                                        AppEntry.AppState.isLoggedIn = true
+                                    }
+                                }catch let error as NSError {
+                                    errorMessage = error.domain
+                                }catch {
+                                    print("Registration failed, catched some error!?")
                                 }
-                                print(isRegistrationSuccesful)
+                                
                             }
                             })
                     
@@ -98,7 +107,7 @@ struct RegisterView: View {
                         content: "Log in",
                         backgroundColor: .white,
                         textColor: .gray,
-                        borderColor: .gray) 
+                        borderColor: .gray)
                     
                     
                 }.padding([.leading, .trailing], 20)
@@ -126,9 +135,8 @@ struct RegisterView: View {
                     }
                 }
             ).animation(.easeInOut(duration: 0.4))
-                
-                
         }
+        
             
         
     }

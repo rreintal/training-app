@@ -50,7 +50,7 @@ struct IdentityInput: View {
                                     isValidationError = true
                                 }
                             }
-                        }
+                        }.disableAutocorrection(true)
                 }
                 else {
                     SecureField(placeholder, text: $inputBinding).foregroundColor(isValidationError == true ? validationErrorForegroundColor : inputTextColor)

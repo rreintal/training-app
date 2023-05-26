@@ -18,7 +18,8 @@ struct HomeView: View {
     var body: some View {
         VStack {
             VStack {
-                Text("Welcome back \(AppEntry.AppState.username.description)! 👋")
+                // TODO - näita nime\(AppEntry.AppState.username.description)!
+                Text("Welcome back! 👋")
                     .font(.headline)
                     .foregroundColor(.white)
                 
@@ -41,6 +42,7 @@ struct HomeView: View {
                         Text("Users you might know").font(.headline)
                         ScrollView(.horizontal) {
                             HStack(spacing: 20) {
+                                // kui users on 0 siis tee siia midagi!
                                 ForEach(users) { user in
                                     FriendCardComponent(name: user.Name)
                                         .transition(.move(edge: .top))
@@ -73,7 +75,7 @@ struct HomeView: View {
             Task {
                 //users = try await AppEntry.AppState.WebController.getUserModels();
                 users = try await AppEntry.AppState.WebController.sendRequest(
-                    urlString:"http://localhost:5187/api/v1.0/Users/GetUserModels/?appUserId=\(AppEntry.AppState.appUserId!.description)",
+                    urlString:"https://hajusapp.azurewebsites.net/api/v1.0/Users/GetUserModels/?appUserId=\(AppEntry.AppState.appUserId!.description)",
                     method: HTTPMethod.GET,
                     payload: nil,
                     returnType: [User].self)

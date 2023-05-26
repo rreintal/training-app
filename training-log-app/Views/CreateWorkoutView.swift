@@ -82,10 +82,6 @@ struct CreateWorkoutView: View {
         .toolbar {
             Button {
                 // save workout
-                // KUI NIMI POLE SALVESTATUD, SIIS ÄRA LASE SALVESTADA
-                
-                // SAADA SEE BACKENDI, JA BACKEND ISE TAGASTAB UUE WORKOUTI EELMISES VIEWIS!!!
-                // TODO
                 
                 if(workoutTitle == "") {
                     self.errorMessage = "Workout must have a title!"
@@ -99,7 +95,7 @@ struct CreateWorkoutView: View {
                     Task {
                         // Returnib EMPTY VALUE!!
                         try await AppEntry.AppState.WebController.sendRequest(
-                            urlString: "http://localhost:5187/api/v1.0/workouts/CreateNewWorkout",
+                            urlString: "https://hajusapp.azurewebsites.net/api/v1.0/workouts/CreateNewWorkout",
                             method: HTTPMethod.POST,
                             payload: workout,
                             returnType: ErrorViewModel.self)
@@ -122,7 +118,7 @@ struct CreateWorkoutView: View {
                 // ei tea kuidas viisakas oleks teha!!!
                 //var newWorkout = try await AppEntry.AppState.WebController.getNewWorkout(userId: AppEntry.AppState.appUserId!)
                 var newWorkout = try await AppEntry.AppState.WebController.sendRequest(
-                    urlString: "http://localhost:5187/api/v1.0/workouts/GetNewWorkout/?appUserId=\(AppEntry.AppState.appUserId!.description)",
+                    urlString: "https://hajusapp.azurewebsites.net/api/v1.0/workouts/GetNewWorkout/?appUserId=\(AppEntry.AppState.appUserId!.description)",
                     method: HTTPMethod.GET,
                     payload: nil,
                     returnType: NewWorkout.self)
@@ -131,6 +127,7 @@ struct CreateWorkoutView: View {
             }
         }.onAppear{
             AppEntry.AppState.addView(view: dismiss)
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
     }
 }

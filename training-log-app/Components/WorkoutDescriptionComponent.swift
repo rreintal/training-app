@@ -43,13 +43,14 @@ struct WorkoutDescriptionComponent<T: View>: View {
                         Task {
                             //try await AppEntry.AppState.WebController.deleteWorkout(workoutId: workoutId)
                             // NO RETURN VALUE!!!
+                            onDelete(workoutId)
                             try await AppEntry.AppState.WebController.sendRequest(
-                                urlString: "http://localhost:5187/api/v1.0/workouts/ArchiveWorkout/?workoutId=\(workoutId)",
+                                urlString: "https://hajusapp.azurewebsites.net/api/v1.0/workouts/ArchiveWorkout/?workoutId=\(workoutId)",
                                 method: HTTPMethod.DELETE,
                                 payload: nil,
                                 returnType: ErrorViewModel.self)
                             
-                            onDelete(workoutId)
+                            
                             
                         }
                     }

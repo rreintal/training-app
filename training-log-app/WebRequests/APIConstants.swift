@@ -8,7 +8,7 @@
 import Foundation
 
 class APIConstants {
-    public static var API_BASE : String = "http://localhost:5187/api"
+    public static var API_BASE : String = "https://hajusapp.azurewebsites.net/api"
     public static var API_VERSION : String = "/v1.0"
     public static var API_ACCOUNT_CONTROLLER : String = "/idendtity/account"
     public static var API_REFRESHTOKEN : String = "/RefreshToken"

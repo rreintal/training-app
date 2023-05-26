@@ -33,6 +33,18 @@ class AppState : ObservableObject{
     @Published
     var views : [DismissAction] = []
     
+    @Published
+    var loginViews : [DismissAction] = []
+    
+    @Published
+    var registerViews : [DismissAction] = []
+    
+    public func cleanIdentityViews(ar : [DismissAction]) {
+        for v in ar {
+            v.callAsFunction()
+        }
+    }
+    
     
     // HACK, et saaks ilusti nupuga välja logida!!!
     @Published
@@ -47,7 +59,6 @@ class AppState : ObservableObject{
         isLoggedIn = false
         jwt = ""
         refreshToken = ""
-        //appUserId = ""
         views = []
     }
     
@@ -59,6 +70,7 @@ class AppState : ObservableObject{
         }
     }
     
+    
     public func addView(view : DismissAction) {
         views.append(view)
 
@@ -66,9 +78,6 @@ class AppState : ObservableObject{
     
     init() {
         WebController = training_log_app.WebController()
-        
-        // fetchi EXERCISED
-        //exerciseItems =  WebController.getExerciseItems()
         
         // DEV!!!
         appUserId = "0d177a5c-f11a-11ed-a05b-0242ac120003"
